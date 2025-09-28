@@ -1,0 +1,117 @@
+Lab6  ~/IdeaProjects/Lab6
+  .idea
+  Lab6.iml
+External Libraries
+Scratches and Consoles
+
+
+CREATE DATABASE Lab_6;
+
+USE Lab_6;
+
+
+CREATE TABLE Customers (
+                           CustomerID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                           CustomerName VARCHAR(100),
+                           CustomerStatus VARCHAR(50),
+                           TotalCustomerMileage INT
+
+
+);
+
+CREATE TABLE Aircrafts(
+                          AircraftID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                          AircraftName Varchar(50),
+                          TotalAircraftSeats INT
+);
+
+CREATE TABLE Flights(
+                        FlightNumber VARCHAR(10) PRIMARY KEY,
+                        AircraftID INT NOT NULL,
+                        FlightMileage INT NOT NULL,
+                        FOREIGN KEY (AircraftID) REFERENCES Aircrafts(AircraftID)
+);
+
+CREATE TABLE Bookings(
+                         BookingID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                         CustomerID INT NOT NULL,
+                         FlightNumber VARCHAR(10) NOT NULL,
+                         FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+                         FOREIGN KEY (FlightNumber) REFERENCES Flights(FlightNumber)
+);
+
+DROP TABLE Customers;
+
+INSERT INTO Customers (CustomerName, CustomerStatus, TotalCustomerMileage) VALUES
+                                                                               ('Augustine Rivera', 'Siver', 115235),
+                                                                               ('Aliana Sepulvida', 'Silver', 6008),
+                                                                               ('Tom Jones','Gold',205767),
+                                                                               ('Jessica James','Silver',127656),
+                                                                               ('Ana Janco', 'Silver', 136773),
+                                                                               ('Jeniffer Cortez','Gold', 300582),
+                                                                               ('Sam Rio', 'None', 2653),
+                                                                               ('Christian Janco','Silver',14642);
+
+INSERT INTO Aircrafts(AircraftName, TotalAircraftSeats) VALUES
+                                                            ('Boeing747',400),
+                                                            ('AirBusA330', 236);
+
+INSERT INTO Flights(FlightNumber, AircraftID, FlightMileage) VALUES
+                                                                 ('DL147',1,135),
+                                                                 ('DL122',2,4370),
+                                                                 ('DL53',3,135),
+                                                                 ('DL222',3,1765),
+                                                                 ('DL37',1,531);
+
+INSERT INTO Bookings(CustomerID, FlightNumber) VALUES
+                                                   (1,'DL147'),
+                                                   (1,'DL122'),
+                                                   (2,'DL122'),
+                                                   (1,'DL122'),
+                                                   (3,'DL122'),
+                                                   (3,'DL53'),
+                                                   (1,'DL147'),
+                                                   (7,'DL147'),
+                                                   (1,'DL147'),
+                                                   (3,'DL222'),
+                                                   (4,'DL147'),
+                                                   (7,'DL147'),
+                                                   (5,'DL222'),
+                                                   (6,'DL222'),
+                                                   (4,'DL122'),
+                                                   (7,'DL37'),
+                                                   (8,'DL222');
+
+
+
+SELECT COUNT(DISTINCT FlightNumber) FROM Flights;
+SELECT AVG(FlightMileage) from FLIGHTS;
+SELECT AVG(TotalAircraftSeats) FROM Aircrafts;
+SELECT CustomerStatus, AVG(TotalCustomerMileage) FROM Customers GROUP BY CustomerStatus;
+SELECT CustomerStatus, MAX(TotalCustomerMileage) FROM Customers GROUP BY CustomerStatus;
+SELECT COUNT(*) FROM Aircrafts WHERE AircraftName LIKE '%Boeing%';
+SELECT * FROM Flights WHERE FlightMileage BETWEEN 300 and 2000;
+
+SELECT c.CustomerStatus, AVG(f.FlightMileage) AS AverateMileage
+FROM Bookings b
+         JOIN Customers c ON b.CustomerID =c.CustomerID
+         JOIN Flights f ON b.FlightNumber = f.FlightNumber
+GROUP BY c.CustomerStatus;
+
+UPDATE Flights
+SET FlightNumber = 'DL53'
+WHERE FlightNumber = '53';
+
+UPDATE Customers
+Set CustomerStatus = 'Silver'
+WHERE CustomerStatus = 'Siver'
+
+SELECT a.AircraftName, COUNT(*) AS total_bookings
+FROM Bookings b
+         JOIN Customers c ON b.CustomerID = c.CustomerID
+         JOIN Flights f ON b.FlightNumber = f.FlightNumber
+         JOIN Aircrafts a ON f.AircraftID = a.AircraftID
+WHERE c.CustomerStatus = 'Gold'
+GROUP BY a.AircraftName
+ORDER BY total_bookings DESC
+    LIMIT 1;
